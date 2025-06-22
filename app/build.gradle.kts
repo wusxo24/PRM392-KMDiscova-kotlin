@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt") // For annotation processing
-    id("com.google.dagger.hilt.android") version "2.48"
+    id("com.google.dagger.hilt.android") version "2.50"
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 

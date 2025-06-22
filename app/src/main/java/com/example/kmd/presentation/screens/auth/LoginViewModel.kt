@@ -22,7 +22,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = loginUseCase(email, password)
             result.onSuccess { user ->
-                _uiState.value = LoginUiState.Success(user.fullName)
+                _uiState.value = LoginUiState.Success(user.email)
             }.onFailure { error ->
                 _uiState.value = LoginUiState.Error(error.message ?: "Unknown error")
             }
