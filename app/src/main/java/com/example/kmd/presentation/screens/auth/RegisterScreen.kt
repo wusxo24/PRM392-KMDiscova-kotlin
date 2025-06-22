@@ -5,24 +5,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.flow.StateFlow
-import androidx.compose.runtime.collectAsState
-@Composable
-fun LoginScreen(
-    navController: NavHostController
-) {
-    val viewModel: LoginViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
 
+@Composable
+fun RegisterScreen(
+    navController: NavHostController,
+    backStackEntry: NavBackStackEntry,
+    viewModel: RegisterViewModel = hiltViewModel(backStackEntry) // ✅ CORRECT
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -31,8 +28,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Login", style = MaterialTheme.typography.headlineLarge)
-
+        Text("Register", style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
@@ -43,13 +39,18 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text("Confirm Password") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -57,19 +58,16 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { viewModel.login(email, password) },
+            onClick = {
+                viewModel.register(email, password, confirmPassword)
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Login")
+            Text("Register")
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        when (uiState) {
-            is LoginUiState.Loading -> CircularProgressIndicator()
-            is LoginUiState.Success -> Text("Welcome, ${(uiState as LoginUiState.Success).username}!")
-            is LoginUiState.Error -> Text("Error: ${(uiState as LoginUiState.Error).message}")
-            else -> {}
+        TextButton(onClick = { navController.navigate("login") }) {
+            Text("Already have an account? Login")
         }
     }
 }

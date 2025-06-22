@@ -31,12 +31,4 @@ object AuthModule {
     @Provides
     @Singleton
     fun provideRegisterUseCase(repo: IAuthRepository): RegisterUseCase = RegisterUseCase(repo)
-
-//    @Provides
-//    @Singleton
-//    fun provideLogoutUseCase(repo: IAuthRepository): LogoutUseCase = LogoutUseCase(repo)
-//
-//    @Provides
-//    @Singleton
-//    fun provideCheckPermissionsUseCase(): CheckPermissionsUseCase = CheckPermissionsUseCase()
 }
