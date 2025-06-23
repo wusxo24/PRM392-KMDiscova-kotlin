@@ -2,15 +2,36 @@ package com.example.kmd.data.mapper
 
 import com.example.kmd.data.remote.dto.auth.LoginResponse
 import com.example.kmd.data.remote.dto.auth.RegisterResponse
+import com.example.kmd.data.remote.dto.auth.UserDto
+import com.example.kmd.domain.model.AuthResult
 import com.example.kmd.domain.model.User
+import com.example.kmd.domain.model.UserType
 import javax.inject.Inject
 
-class   AuthMapper @Inject constructor(){
-    fun mapLoginResponseToUser(response: LoginResponse): User {
-        return User(response.userId, response.email, response.token)
+object AuthMapper {
+    fun UserDto.toDomainModel(): User {
+        return User(
+            id = this.id,
+            email = this.email,
+            userType = UserType.valueOf(this.user_type),
+            isVerified = this.is_verified
+        )
     }
 
-    fun mapRegisterResponseToUser(response: RegisterResponse): User {
-        return User(response.userId, response.email, response.token)
+    fun LoginResponse.toDomainModel(): AuthResult {
+        return AuthResult(
+            message = this.message,
+            user = this.user.toDomainModel(),
+            token = this.token
+        )
+    }
+
+    fun RegisterResponse.toDomainModel(): AuthResult {
+        return AuthResult(
+            message = this.message,
+            user = this.user.toDomainModel(),
+            token = this.token
+        )
     }
 }
+

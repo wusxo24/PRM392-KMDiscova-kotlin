@@ -1,4 +1,3 @@
-// RepositoryModule.kt
 package com.example.kmd.di
 
 import com.example.kmd.data.local.preferences.PreferencesManager
@@ -14,7 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+object AuthRepositoryModule {
 
     @Provides
     @Singleton
