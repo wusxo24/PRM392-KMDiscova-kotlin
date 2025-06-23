@@ -15,7 +15,7 @@ import com.example.kmd.presentation.screens.auth.RegisterScreen
 import com.example.kmd.presentation.screens.splash.SplashScreen
 import com.example.kmd.ui.theme.KmdTheme
 import dagger.hilt.android.AndroidEntryPoint
-
+import com.example.kmd.presentation.screens.psychologist.PsychologistListScreen
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,16 +70,21 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        // 👇 Psychologist List (main screen after login)
                         composable(Screen.Home.route) {
-                            // Temporary home screen - we'll implement this later
-                            HomeScreen(
-                                onLogout = {
-                                    navController.navigate(Screen.Login.route) {
-                                        popUpTo(Screen.Home.route) { inclusive = true }
-                                    }
+                            PsychologistListScreen(
+                                onPsychologistClick = { psychologistId ->
+                                    navController.navigate("${Screen.PsychologistDetails.route}/$psychologistId")
                                 }
                             )
                         }
+
+//                        // 👇 Detail screen
+//                        composable("${Screen.PsychologistDetails.route}/{id}") { backStackEntry ->
+//                            val psychologistId = backStackEntry.arguments?.getString("id") ?: return@composable
+//                            PsychologistDetailScreen(psychologistId = psychologistId)
+//                        }
+
                     }
                 }
             }

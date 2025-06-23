@@ -1,0 +1,52 @@
+package com.example.kmd.data.remote.dto.psychologist
+
+data class PsychologistDetailDto(
+    val email: String,
+    val user_type: String,
+    val is_user_verified: Boolean,
+    val is_user_active: Boolean,
+    val profile_picture_url: String?,
+    val first_name: String,
+    val last_name: String,
+    val license_number: String?,
+    val license_issuing_authority: String?,
+    val license_expiry_date: String?,
+    val years_of_experience: Int,
+    val biography: String?,
+    val education: Map<String, String>?,
+    val certifications: Map<String, String>?,
+    val verification_status: String?,
+    val admin_notes: String?,
+    val offers_initial_consultation: Boolean,
+    val offers_online_sessions: Boolean,
+    val office_address: String?,
+    val website_url: String?,
+    val linkedin_url: String?,
+    val pricing: String?,
+    val hourly_rate: String?,
+    val initial_consultation_rate: String?,
+    val full_name: String,
+    val display_name: String?,
+    val is_verified: Boolean,
+    val is_marketplace_visible: Boolean,
+    val license_is_valid: Boolean,
+    val services_offered: List<String>,
+    val created_at: String,
+    val updated_at: String,
+    val user: UserInfoDto,
+    val profile_completeness: String?,
+    val verification_requirements: String?,
+    val can_book_appointments: String?
+)
+
+data class UserInfoDto(
+    val id: String,
+    val email: String,
+    val user_type: String,
+    val is_active: Boolean,
+    val is_verified: Boolean,
+    val profile_picture_url: String?,
+    val user_timezone: String?,
+    val registration_date: String,
+    val last_login_date: String
+)
