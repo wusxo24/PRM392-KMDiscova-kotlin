@@ -24,10 +24,6 @@ class PsychologistListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(UiState(isLoading = true))
     val uiState: StateFlow<UiState> = _uiState
-
-    init {
-        fetchPsychologists()
-    }
     init {
         Log.d("ViewModel", "init called") // <--- Step 1
         fetchPsychologists()

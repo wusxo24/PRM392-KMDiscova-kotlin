@@ -15,8 +15,9 @@ class PsychologistRepository @Inject constructor(
     override suspend fun getPsychologists(): List<Psychologist> {
         return try {
             val response = api.getPsychologists()
-            Log.d("Repo", "Fetched from API: ${response.results.size}")
-            response.results.map { it.toDomain() }
+            val domainList = response.results.map { it.toDomain() }
+            Log.d("Repo", "Mapped ${domainList.size} psychologists")
+            return domainList
         } catch (e: Exception) {
             Log.e("Repo", "API call failed", e)
             throw e
