@@ -4,8 +4,9 @@ import com.example.kmd.data.remote.dto.psychologist.PricingDto
 import com.example.kmd.data.remote.dto.psychologist.PsychologistDetailDto
 import com.example.kmd.data.remote.dto.psychologist.PsychologistDto
 import com.example.kmd.domain.model.Psychologist
-import com.example.kmd.domain.model.PsychologistDetail
 import com.example.kmd.domain.model.Pricing
+import com.example.kmd.domain.model.PsychologistDetail
+
 fun PsychologistDto.toDomain(): Psychologist {
     return Psychologist(
         id = user,

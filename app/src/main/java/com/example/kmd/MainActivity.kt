@@ -5,13 +5,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.kmd.presentation.navigation.Screen
 import com.example.kmd.presentation.screens.auth.LoginScreen
 import com.example.kmd.presentation.screens.HomeScreen
 import com.example.kmd.presentation.screens.auth.RegisterScreen
+import com.example.kmd.presentation.screens.psychologist.PsychologistDetailScreen
 import com.example.kmd.presentation.screens.splash.SplashScreen
 import com.example.kmd.ui.theme.KmdTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,11 +82,14 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-//                        // 👇 Detail screen
-//                        composable("${Screen.PsychologistDetails.route}/{id}") { backStackEntry ->
-//                            val psychologistId = backStackEntry.arguments?.getString("id") ?: return@composable
-//                            PsychologistDetailScreen(psychologistId = psychologistId)
-//                        }
+                        composable(
+                            route = "${Screen.PsychologistDetails.route}/{psychologistId}",
+                            arguments = listOf(navArgument("psychologistId") { type = NavType.StringType })
+                        ) {
+                            PsychologistDetailScreen(
+                                onBackClick = { navController.popBackStack() }
+                            )
+                        }
 
                     }
                 }

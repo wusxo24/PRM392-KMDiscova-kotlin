@@ -35,7 +35,7 @@ data class PsychologistDetailDto(
     val updated_at: String,
     val user: UserInfoDto,
     val profile_completeness: String?,
-    val verification_requirements: String?,
+    val verification_requirements: List<String>,
     val can_book_appointments: String?
 )
 

@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
@@ -184,16 +185,13 @@ private fun PsychologistCard(
     }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
             pressedElevation = 8.dp
         ),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
@@ -201,7 +199,7 @@ private fun PsychologistCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.Top
         ) {
-            // Profile Image with fallback
+            // Profile picture
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -213,9 +211,7 @@ private fun PsychologistCard(
                     Image(
                         painter = painter,
                         contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape),
+                        modifier = Modifier.fillMaxSize().clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 } else {
@@ -230,11 +226,7 @@ private fun PsychologistCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Content
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                // Name
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = psychologist.fullName,
                     style = MaterialTheme.typography.titleLarge,
@@ -244,10 +236,7 @@ private fun PsychologistCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Experience with icon
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
@@ -263,27 +252,24 @@ private fun PsychologistCard(
                     )
                 }
 
-                // Biography
-                psychologist.biography?.let { bio ->
-                    if (bio.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = bio,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis,
-                            lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
-                        )
-                    }
+                psychologist.biography?.takeIf { it.isNotBlank() }?.let { bio ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = bio,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Action button
+                // ✅ Clickable Surface
                 Surface(
-                    modifier = Modifier,
-                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable(onClick = onClick),
                     color = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Text(

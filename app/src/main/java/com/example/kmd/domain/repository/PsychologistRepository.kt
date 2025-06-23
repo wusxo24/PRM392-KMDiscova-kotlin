@@ -4,9 +4,9 @@ import android.util.Log
 import com.example.kmd.data.mapper.toDomain
 import com.example.kmd.data.remote.api.PsychologistApiService
 import com.example.kmd.domain.model.Psychologist
-import com.example.kmd.domain.model.PsychologistDetail
 import com.example.kmd.domain.repository.IPsychologistRepository
 import javax.inject.Inject
+import com.example.kmd.domain.model.PsychologistDetail
 
 class PsychologistRepository @Inject constructor(
     private val api: PsychologistApiService
