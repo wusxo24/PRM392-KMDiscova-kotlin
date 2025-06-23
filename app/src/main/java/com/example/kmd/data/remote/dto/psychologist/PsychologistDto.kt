@@ -17,8 +17,6 @@ data class PsychologistDto(
     val pricing: PricingDto?,
     val profile_completeness: String?,
     val license_issuing_authority: String?,
-    val education: Map<String, String>?,
-    val certifications: Map<String, String>?,
     val created_at: String
 )
 

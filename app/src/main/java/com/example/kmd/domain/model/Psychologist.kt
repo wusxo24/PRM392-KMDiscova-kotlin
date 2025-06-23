@@ -1,13 +1,17 @@
 package com.example.kmd.domain.model
 
+
 data class Psychologist(
     val id: String,
     val fullName: String,
     val profilePictureUrl: String?,
     val yearsOfExperience: Int,
     val biography: String?,
-    val pricing: Pricing?
+    val pricing: Pricing?,
+    val offersInitialConsultation: Boolean,
+    val offersOnlineSessions: Boolean
 )
+
 
 data class PsychologistDetail(
     val id: String,

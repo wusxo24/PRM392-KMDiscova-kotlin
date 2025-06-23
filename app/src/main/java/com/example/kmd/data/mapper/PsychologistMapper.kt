@@ -13,7 +13,10 @@ fun PsychologistDto.toDomain(): Psychologist {
         profilePictureUrl = profile_picture_url,
         yearsOfExperience = years_of_experience,
         biography = biography,
-        pricing = pricing?.toDomain()
+        pricing = pricing?.toDomain(), // ✅ CORRECT
+        offersInitialConsultation = offers_initial_consultation,
+        offersOnlineSessions = offers_online_sessions
+
     )
 }
 

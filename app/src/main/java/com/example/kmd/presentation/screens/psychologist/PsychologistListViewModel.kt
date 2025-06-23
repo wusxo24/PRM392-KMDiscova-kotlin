@@ -1,5 +1,6 @@
 package com.example.kmd.presentation.screens.psychologist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kmd.domain.model.Psychologist
@@ -27,14 +28,20 @@ class PsychologistListViewModel @Inject constructor(
     init {
         fetchPsychologists()
     }
-
+    init {
+        Log.d("ViewModel", "init called") // <--- Step 1
+        fetchPsychologists()
+    }
     private fun fetchPsychologists() {
         viewModelScope.launch {
+            Log.d("ViewModel", "Launching coroutine") // <--- Step 2
             _uiState.value = UiState(isLoading = true)
             try {
                 val result = getPsychologistsUseCase()
+                Log.d("ViewModel", "Fetched ${result.size} psychologists") // <--- Step 3
                 _uiState.value = UiState(psychologists = result)
             } catch (e: Exception) {
+                Log.e("ViewModel", "Error fetching psychologists", e) // <--- Step 4
                 _uiState.value = UiState(error = e.message ?: "An error occurred")
             }
         }

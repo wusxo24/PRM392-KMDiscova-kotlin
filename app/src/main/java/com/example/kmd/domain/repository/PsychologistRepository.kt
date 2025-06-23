@@ -1,5 +1,6 @@
 package com.example.kmd.domain.repository
 
+import android.util.Log
 import com.example.kmd.data.mapper.toDomain
 import com.example.kmd.data.remote.api.PsychologistApiService
 import com.example.kmd.domain.model.Psychologist
@@ -12,9 +13,16 @@ class PsychologistRepository @Inject constructor(
 ) : IPsychologistRepository {
 
     override suspend fun getPsychologists(): List<Psychologist> {
-        val response = api.getPsychologists()
-        return response.results.map { it.toDomain() }
+        return try {
+            val response = api.getPsychologists()
+            Log.d("Repo", "Fetched from API: ${response.results.size}")
+            response.results.map { it.toDomain() }
+        } catch (e: Exception) {
+            Log.e("Repo", "API call failed", e)
+            throw e
+        }
     }
+
 
     override suspend fun getPsychologistDetail(id: String): PsychologistDetail {
         val response = api.getPsychologistDetail(id)
