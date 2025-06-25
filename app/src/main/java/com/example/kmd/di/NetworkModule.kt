@@ -1,6 +1,7 @@
 package com.example.kmd.di
 
 import com.example.kmd.data.local.preferences.PreferencesManager
+import com.example.kmd.data.remote.api.AppointmentApiService
 import com.example.kmd.data.remote.interceptors.AuthInterceptor
 import com.example.kmd.data.remote.interceptors.LoggingInterceptor
 import dagger.Module
@@ -48,9 +49,15 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://your-api-base-url.com/") // Replace with your actual base URL
+            .baseUrl("https://kmdiscova.id.vn/") // Replace with your actual base URL
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+    @Provides
+    @Singleton
+    fun provideAppointmentApiService(retrofit: Retrofit): AppointmentApiService {
+        return retrofit.create(AppointmentApiService::class.java)
+    }
+
 }

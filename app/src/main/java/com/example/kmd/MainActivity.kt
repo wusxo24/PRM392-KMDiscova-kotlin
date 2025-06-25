@@ -5,16 +5,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.kmd.presentation.navigation.Screen
 import com.example.kmd.presentation.screens.auth.LoginScreen
-import com.example.kmd.presentation.screens.HomeScreen
 import com.example.kmd.presentation.screens.auth.RegisterScreen
+import com.example.kmd.presentation.screens.psychologist.PsychologistDetailScreen
 import com.example.kmd.presentation.screens.splash.SplashScreen
 import com.example.kmd.ui.theme.KmdTheme
 import dagger.hilt.android.AndroidEntryPoint
+import com.example.kmd.presentation.screens.psychologist.PsychologistListScreen
+import com.example.kmd.presentation.screens.psychologist.SlotViewScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -70,16 +74,51 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        // 👇 Psychologist List (main screen after login)
                         composable(Screen.Home.route) {
-                            // Temporary home screen - we'll implement this later
-                            HomeScreen(
-                                onLogout = {
-                                    navController.navigate(Screen.Login.route) {
-                                        popUpTo(Screen.Home.route) { inclusive = true }
+                            PsychologistListScreen(
+                                onPsychologistClick = { psychologistId ->
+                                    navController.navigate("${Screen.PsychologistDetails.route}/$psychologistId")
+                                },
+                                onLogoutClick = {
+                                    // Clear token/session here (e.g., via DataStore or ViewModel)
+                                    navController.navigate("login") {
+                                        popUpTo("psychologist_list") { inclusive = true }
                                     }
                                 }
                             )
+
                         }
+
+                        composable(
+                            route = "${Screen.PsychologistDetails.route}/{psychologistId}",
+                            arguments = listOf(navArgument("psychologistId") { type = NavType.StringType })
+                        ) {
+                            PsychologistDetailScreen(
+                                onBackClick = { navController.popBackStack() },
+                                onBookClick = { id, type ->
+                                    navController.navigate("booking_screen/$id/$type")
+                                }
+                            )
+
+                        }
+                        composable(
+                            route = "booking_screen/{userId}/{sessionType}",
+                            arguments = listOf(
+                                navArgument("userId") { type = NavType.StringType },
+                                navArgument("sessionType") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                            val sessionType = backStackEntry.arguments?.getString("sessionType") ?: ""
+
+                            SlotViewScreen(
+                                userId = userId,
+                                sessionType = sessionType,
+                                onBackClick = { navController.popBackStack() }
+                            )
+                        }
+
                     }
                 }
             }

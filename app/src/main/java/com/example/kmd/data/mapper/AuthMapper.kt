@@ -6,7 +6,6 @@ import com.example.kmd.data.remote.dto.auth.UserDto
 import com.example.kmd.domain.model.AuthResult
 import com.example.kmd.domain.model.User
 import com.example.kmd.domain.model.UserType
-import javax.inject.Inject
 
 object AuthMapper {
     fun UserDto.toDomainModel(): User {
@@ -33,5 +32,6 @@ object AuthMapper {
             token = this.token
         )
     }
+
 }
 
