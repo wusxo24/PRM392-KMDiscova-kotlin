@@ -30,6 +30,7 @@ import com.example.kmd.domain.model.Psychologist
 @Composable
 fun PsychologistListScreen(
     onPsychologistClick: (String) -> Unit,
+    onLogoutClick: () -> Unit,
     viewModel: PsychologistListViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -48,11 +49,22 @@ fun PsychologistListScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
+                actions = {
+                    TextButton(onClick = onLogoutClick) {
+                        Text(
+                            "Logout",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
+
         }
     ) { padding ->
         Box(

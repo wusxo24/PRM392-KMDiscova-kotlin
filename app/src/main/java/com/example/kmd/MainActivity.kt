@@ -12,7 +12,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.kmd.presentation.navigation.Screen
 import com.example.kmd.presentation.screens.auth.LoginScreen
-import com.example.kmd.presentation.screens.HomeScreen
 import com.example.kmd.presentation.screens.auth.RegisterScreen
 import com.example.kmd.presentation.screens.psychologist.PsychologistDetailScreen
 import com.example.kmd.presentation.screens.splash.SplashScreen
@@ -80,8 +79,15 @@ class MainActivity : ComponentActivity() {
                             PsychologistListScreen(
                                 onPsychologistClick = { psychologistId ->
                                     navController.navigate("${Screen.PsychologistDetails.route}/$psychologistId")
+                                },
+                                onLogoutClick = {
+                                    // Clear token/session here (e.g., via DataStore or ViewModel)
+                                    navController.navigate("login") {
+                                        popUpTo("psychologist_list") { inclusive = true }
+                                    }
                                 }
                             )
+
                         }
 
                         composable(

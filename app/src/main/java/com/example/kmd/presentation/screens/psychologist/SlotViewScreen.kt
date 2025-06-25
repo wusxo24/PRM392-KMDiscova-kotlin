@@ -1,5 +1,6 @@
 package com.example.kmd.presentation.screens.psychologist
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -65,6 +66,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import com.example.kmd.presentation.screens.auth.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,10 +75,14 @@ fun SlotViewScreen(
     userId: String,
     sessionType: String,
     onBackClick: () -> Unit,
-    viewModel: SlotViewModel = hiltViewModel()
+    viewModel: SlotViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+    val loginState = loginViewModel.uiState.collectAsState().value
+    val loggedInUser = loginState.user
     val state = viewModel.uiState
     var selectedSlotId by remember { mutableStateOf<Int?>(null) }
+    val context = LocalContext.current
 
 
     LaunchedEffect(Unit) {
@@ -140,11 +147,22 @@ fun SlotViewScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Book button
                         Button(
-                            onClick = {
-                                // TODO: Pass selectedSlots to booking screen or API
-                                println("Selected slot: $selectedSlotId")
+                            onClick = onClick@{
+                                val parentId = loggedInUser?.id
+                                val psychologistId = userId
+                                val slotId = selectedSlotId
+
+                                if (parentId == null || psychologistId.isEmpty() || slotId == null) {
+                                    Toast.makeText(
+                                        context,
+                                        "Missing required information for booking. Please try again.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@onClick // ✅ This is now valid!
+                                }
+
+                                println("Booking: parentId=$parentId, psychologistId=$psychologistId, slotId=$slotId")
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -162,6 +180,8 @@ fun SlotViewScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Book Slot")
                         }
+
+
                     }
                 }
             }
