@@ -1,5 +1,7 @@
 package com.example.kmd.domain.model
 
+import com.example.kmd.data.remote.dto.auth.UserDto
+
 
 data class Psychologist(
     val id: String,
@@ -23,5 +25,8 @@ data class PsychologistDetail(
     val licenseAuthority: String?,
     val hourlyRate: String?,
     val initialConsultationRate: String?,
-    val services: List<String>
+    val services: List<String>,
+    val offersInitialConsultation: Boolean,
+    val offersOnlineSessions: Boolean,
+    val user: UserDto
 )

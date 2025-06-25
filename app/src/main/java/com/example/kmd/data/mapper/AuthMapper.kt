@@ -33,5 +33,6 @@ object AuthMapper {
             token = this.token
         )
     }
+
 }
 

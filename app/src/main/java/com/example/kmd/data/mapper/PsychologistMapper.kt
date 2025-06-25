@@ -32,7 +32,10 @@ fun PsychologistDetailDto.toDomain(): PsychologistDetail {
         licenseAuthority = license_issuing_authority,
         hourlyRate = hourly_rate,
         initialConsultationRate = initial_consultation_rate,
-        services = services_offered
+        services = services_offered,
+        offersInitialConsultation = offers_initial_consultation,
+        offersOnlineSessions = offers_online_sessions,
+        user = user.toDomain()
     )
 }
 
@@ -42,6 +45,20 @@ fun PricingDto.toDomain(): Pricing {
         onlineRate = online_session_rate,
         initialRate = initial_consultation_rate,
         currency = currency
+    )
+}
+// Add this in the same file (or in a new mapper file)
+fun com.example.kmd.data.remote.dto.psychologist.UserInfoDto.toDomain(): com.example.kmd.data.remote.dto.auth.UserDto {
+    return com.example.kmd.data.remote.dto.auth.UserDto(
+        id = id,
+        email = email,
+        user_type = user_type,
+        is_active = is_active,
+        is_verified = is_verified,
+        profile_picture_url = profile_picture_url,
+        user_timezone = user_timezone,
+        registration_date = registration_date,
+        last_login_date = last_login_date
     )
 }
 

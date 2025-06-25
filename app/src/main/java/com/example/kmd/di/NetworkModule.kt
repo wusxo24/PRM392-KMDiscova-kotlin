@@ -1,6 +1,7 @@
 package com.example.kmd.di
 
 import com.example.kmd.data.local.preferences.PreferencesManager
+import com.example.kmd.data.remote.api.AppointmentApiService
 import com.example.kmd.data.remote.interceptors.AuthInterceptor
 import com.example.kmd.data.remote.interceptors.LoggingInterceptor
 import dagger.Module
@@ -53,4 +54,10 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+    @Provides
+    @Singleton
+    fun provideAppointmentApiService(retrofit: Retrofit): AppointmentApiService {
+        return retrofit.create(AppointmentApiService::class.java)
+    }
+
 }

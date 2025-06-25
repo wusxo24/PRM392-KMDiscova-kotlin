@@ -19,6 +19,8 @@ import com.example.kmd.presentation.screens.splash.SplashScreen
 import com.example.kmd.ui.theme.KmdTheme
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.kmd.presentation.screens.psychologist.PsychologistListScreen
+import com.example.kmd.presentation.screens.psychologist.SlotViewScreen
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +89,26 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("psychologistId") { type = NavType.StringType })
                         ) {
                             PsychologistDetailScreen(
+                                onBackClick = { navController.popBackStack() },
+                                onBookClick = { id, type ->
+                                    navController.navigate("booking_screen/$id/$type")
+                                }
+                            )
+
+                        }
+                        composable(
+                            route = "booking_screen/{userId}/{sessionType}",
+                            arguments = listOf(
+                                navArgument("userId") { type = NavType.StringType },
+                                navArgument("sessionType") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+                            val sessionType = backStackEntry.arguments?.getString("sessionType") ?: ""
+
+                            SlotViewScreen(
+                                userId = userId,
+                                sessionType = sessionType,
                                 onBackClick = { navController.popBackStack() }
                             )
                         }
