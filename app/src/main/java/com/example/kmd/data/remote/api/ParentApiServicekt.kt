@@ -22,4 +22,8 @@ interface ParentApiService {
 
     @GET("/api/children/profile/my_children/")
     suspend fun getMyChildren(): MyChildrenResponse
+
+    @PATCH("/api/parents/profile/update_profile/")
+    suspend fun updateParentProfile(@Body request: CreateParentProfileRequest): ParentProfileDto
+
 }
