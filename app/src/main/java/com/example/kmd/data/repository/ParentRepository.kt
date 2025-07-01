@@ -30,6 +30,7 @@ class ParentRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
     override suspend fun getParentProfile(): Result<ParentProfile> {
         return try {
             val response = parentApiService.getParentProfile()
@@ -38,6 +39,26 @@ class ParentRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun updateParentProfile(profile: ParentProfile): Result<ParentProfile> {
+        return try {
+            val request = CreateParentProfileRequest(
+                first_name = profile.firstName,
+                last_name = profile.lastName,
+                phone_number = profile.phoneNumber,
+                address_line1 = profile.addressLine1,
+                city = profile.city,
+                state_province = profile.stateProvince,
+                postal_code = profile.postalCode,
+                country = profile.country
+            )
+            val response = parentApiService.updateParentProfile(request)
+            Result.success(response.toDomain())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun addChild(child: Child): Result<Child> {
         return try {
             val request = AddChildRequest(
