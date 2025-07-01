@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                                 scope = scope,
                                 drawerState = drawerState,
                                 onPsychologistClick = { psychologistId ->
-                                    navController.navigate("${Screen.PsychologistDetails.route}/$psychologistId")
+                                    navController.navigate(Screen.PsychologistDetails.createRoute(psychologistId))
                                 },
                                 onLogoutClick = {}
                             )
@@ -115,29 +115,32 @@ class MainActivity : ComponentActivity() {
                             ChildrenManageScreen(scope = scope, drawerState = drawerState)
                         }
                         composable(
-                            route = "${Screen.PsychologistDetails.route}/{psychologistId}",
+                            route = Screen.PsychologistDetails.route,
                             arguments = listOf(navArgument("psychologistId") { type = NavType.StringType })
                         ) {
                             PsychologistDetailScreen(
                                 onBackClick = { navController.popBackStack() },
-                                onBookClick = { id, type ->
-                                    navController.navigate("booking_screen/$id/$type")
+                                onBookClick = { id, type, childId ->
+                                    navController.navigate("booking_screen/$id/$type/$childId")
                                 }
                             )
                         }
                         composable(
-                            route = "booking_screen/{userId}/{sessionType}",
+                            route = "booking_screen/{userId}/{sessionType}/{childId}",
                             arguments = listOf(
                                 navArgument("userId") { type = NavType.StringType },
-                                navArgument("sessionType") { type = NavType.StringType }
+                                navArgument("sessionType") { type = NavType.StringType },
+                                navArgument("childId") { type = NavType.StringType }
                             )
                         ) { backStackEntry ->
                             val userId = backStackEntry.arguments?.getString("userId") ?: ""
                             val sessionType = backStackEntry.arguments?.getString("sessionType") ?: ""
+                            val childId = backStackEntry.arguments?.getString("childId") ?: ""
 
                             SlotViewScreen(
                                 userId = userId,
                                 sessionType = sessionType,
+                                childId = childId,
                                 onBackClick = { navController.popBackStack() }
                             )
                         }
