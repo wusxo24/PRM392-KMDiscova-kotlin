@@ -18,5 +18,6 @@ sealed class Screen(val route: String) {
     object CreateParentProfile : Screen("create_parent_profile")
     object ParentProfile : Screen("parent_profile")
     object ChildrenManage : Screen("children_manage")
+    object Cart : Screen("cart")
 
 }

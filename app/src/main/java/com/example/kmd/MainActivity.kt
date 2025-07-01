@@ -14,6 +14,7 @@ import com.example.kmd.presentation.components.AppDrawerContent
 import com.example.kmd.presentation.navigation.Screen
 import com.example.kmd.presentation.screens.auth.LoginScreen
 import com.example.kmd.presentation.screens.auth.RegisterScreen
+import com.example.kmd.presentation.screens.cart.CartScreen
 import com.example.kmd.presentation.screens.children.ChildrenManageScreen
 import com.example.kmd.presentation.screens.parent.CreateParentProfileScreen
 import com.example.kmd.presentation.screens.parent.ParentProfileScreen
@@ -113,6 +114,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Screen.ChildrenManage.route) {
                             ChildrenManageScreen(scope = scope, drawerState = drawerState)
+                        }
+                        composable(Screen.Cart.route) {
+                            CartScreen(scope = scope, drawerState = drawerState)
                         }
                         composable(
                             route = Screen.PsychologistDetails.route,
