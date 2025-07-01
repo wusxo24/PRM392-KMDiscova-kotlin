@@ -74,6 +74,7 @@ import androidx.compose.ui.platform.LocalContext
 fun SlotViewScreen(
     userId: String,
     sessionType: String,
+    childId: String,
     onBackClick: () -> Unit,
     viewModel: SlotViewModel = hiltViewModel(),
 ) {
@@ -155,10 +156,10 @@ fun SlotViewScreen(
                                         "Missing required information for booking. Please try again.",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    return@onClick // ✅ This is now valid!
+                                    return@onClick
                                 }
 
-                                println("psychologistId=$psychologistId, slotId=$slotId")
+                                println("psychologistId=$psychologistId, slotId=$slotId, childId=$childId")
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

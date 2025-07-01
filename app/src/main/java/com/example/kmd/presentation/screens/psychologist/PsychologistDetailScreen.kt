@@ -2,6 +2,7 @@ package com.example.kmd.presentation.screens.psychologist
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Person
@@ -25,16 +27,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.example.kmd.domain.model.Child
 import com.example.kmd.domain.model.PsychologistDetail
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PsychologistDetailScreen(
     onBackClick: () -> Unit,
-    onBookClick: (String, String) -> Unit,
+    onBookClick: (String, String, String) -> Unit, // Add childId parameter
     viewModel: PsychologistDetailViewModel = androidx.hilt.navigation.compose.hiltViewModel()
 ) {
     val state = viewModel.uiState
+    val children = viewModel.childrenState
 
     Scaffold(
         topBar = {
@@ -82,13 +86,16 @@ fun PsychologistDetailScreen(
                 }
 
                 is PsychologistDetailViewModel.DetailUiState.Success -> {
-                    PsychologistContent(psychologist = state.psychologist, onBookClick = onBookClick )
+                    PsychologistContent(
+                        psychologist = state.psychologist,
+                        children = children,
+                        onBookClick = onBookClick
+                    )
                 }
             }
         }
     }
 }
-
 @Composable
 private fun LoadingState() {
     Column(
@@ -144,7 +151,10 @@ private fun ErrorState(message: String) {
 @Composable
 private fun PsychologistContent(
     psychologist: PsychologistDetail,
-    onBookClick: (String, String) -> Unit) {
+    children: List<Child>,
+    onBookClick: (String, String, String) -> Unit
+) {
+    var selectedChild by remember { mutableStateOf<Child?>(null) }
 
     Column(
         modifier = Modifier
@@ -247,11 +257,21 @@ private fun PsychologistContent(
             )
 
             Spacer(modifier = Modifier.height(32.dp))
-
+            // Child Dropdown
+            ChildrenDropdown(
+                children = children,
+                selectedChild = selectedChild,
+                onChildSelected = { selectedChild = it }
+            )
 // Booking Buttons
             if (psychologist.offersInitialConsultation) {
                 Button(
-                    onClick = { onBookClick(psychologist.id, "InitialConsultation") },
+                    onClick = {
+                        selectedChild?.let {
+                            onBookClick(psychologist.id, "InitialConsultation", it.id)
+                        }
+                    },
+                    enabled = selectedChild != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -271,7 +291,12 @@ private fun PsychologistContent(
 
             if (psychologist.offersOnlineSessions) {
                 Button(
-                    onClick = { onBookClick(psychologist.id, "OnlineMeeting") },
+                    onClick = {
+                        selectedChild?.let {
+                            onBookClick(psychologist.id, "OnlineMeeting", it.id)
+                        }
+                    },
+                    enabled = selectedChild != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -362,5 +387,45 @@ private fun DetailRow(
             maxLines = 1,
             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
         )
+    }
+}
+@Composable
+fun ChildrenDropdown(
+    children: List<Child>,
+    selectedChild: Child?,
+    onChildSelected: (Child) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        OutlinedTextField(
+            value = selectedChild?.displayName ?: "Select a child",
+            onValueChange = { },
+            readOnly = true,
+            label = { Text("Child") },
+            trailingIcon = {
+                Icon(
+                    Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown",
+                    modifier = Modifier.clickable { expanded = !expanded }
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            children.forEach { child ->
+                DropdownMenuItem(
+                    text = { Text(child.displayName) },
+                    onClick = {
+                        onChildSelected(child)
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }
