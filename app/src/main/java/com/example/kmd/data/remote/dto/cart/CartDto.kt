@@ -19,6 +19,6 @@ data class CartItemDto(
     val session_type: String,
     val scheduled_start_time: String,
     val scheduled_end_time: String,
-    val price: String, // Changed to String
-    val currency: String // Added currency here
+    val price: String,
+    val currency: String
 )
