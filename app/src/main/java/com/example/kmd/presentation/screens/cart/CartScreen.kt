@@ -1,5 +1,6 @@
 package com.example.kmd.presentation.screens.cart
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,14 +8,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RemoveShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.example.kmd.domain.model.CartItem
 import com.example.kmd.presentation.components.AppTopAppBar
 import kotlinx.coroutines.CoroutineScope
@@ -24,9 +29,23 @@ import kotlinx.coroutines.CoroutineScope
 fun CartScreen(
     scope: CoroutineScope,
     drawerState: DrawerState,
+    onItemClick: (String) -> Unit,
     viewModel: CartViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadCart()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -65,7 +84,7 @@ fun CartScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(uiState.cart!!.items) { item ->
-                            CartItemView(item = item)
+                            CartItemView(item = item, onClick = { onItemClick(item.itemId) })
                         }
                     }
                 }
@@ -99,9 +118,11 @@ fun EmptyCartView() {
 
 
 @Composable
-fun CartItemView(item: CartItem) {
+fun CartItemView(item: CartItem, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

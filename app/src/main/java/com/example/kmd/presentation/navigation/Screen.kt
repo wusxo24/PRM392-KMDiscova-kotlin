@@ -19,5 +19,8 @@ sealed class Screen(val route: String) {
     object ParentProfile : Screen("parent_profile")
     object ChildrenManage : Screen("children_manage")
     object Cart : Screen("cart")
+    object CartDetail : Screen("cart_detail/{itemId}") {
+        fun createRoute(itemId: String) = "cart_detail/$itemId"
+    }
 
 }

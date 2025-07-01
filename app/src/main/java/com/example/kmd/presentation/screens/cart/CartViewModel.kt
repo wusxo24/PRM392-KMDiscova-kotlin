@@ -29,7 +29,7 @@ class CartViewModel @Inject constructor(
         loadCart()
     }
 
-    private fun loadCart() {
+    fun loadCart() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             val result = getCartUseCase()

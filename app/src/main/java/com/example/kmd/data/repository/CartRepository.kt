@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/kmd/data/repository/CartRepository.kt
 package com.example.kmd.data.repository
 
 import com.example.kmd.data.mapper.toDomain
@@ -27,7 +26,7 @@ class CartRepository @Inject constructor(
         sessionType: String,
         slotId: Int,
         notes: String?
-    ): Result<Unit> { // Changed return type
+    ): Result<Unit> {
         return try {
             val request = AddToCartRequest(
                 child_id = childId,
@@ -36,9 +35,17 @@ class CartRepository @Inject constructor(
                 start_slot_id = slotId,
                 parent_notes = notes
             )
-            // We just need to know if the call succeeds, we don't need to process the response
             cartApiService.addItemToCart(request)
-            Result.success(Unit) // Return success
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun removeCartItem(itemId: String): Result<Unit> {
+        return try {
+            cartApiService.removeItemFromCart(itemId)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
