@@ -3,7 +3,11 @@ package com.example.kmd.presentation.screens.cart
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.kmd.data.repository.CartRepository
 import com.example.kmd.domain.model.CartItem
+import com.example.kmd.domain.model.CheckoutRequest
+import com.example.kmd.domain.model.CheckoutResponse
+import com.example.kmd.domain.repository.ICartRepository
 import com.example.kmd.domain.usecase.cart.GetCartUseCase
 import com.example.kmd.domain.usecase.cart.RemoveCartItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +28,7 @@ data class CartDetailUiState(
 class CartDetailViewModel @Inject constructor(
     private val getCartUseCase: GetCartUseCase,
     private val removeCartItemUseCase: RemoveCartItemUseCase,
+    private val cartRepository: ICartRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -65,4 +70,22 @@ class CartDetailViewModel @Inject constructor(
             }
         }
     }
+    fun checkoutCartItem(
+        itemId: String,
+        onSuccess: (CheckoutResponse) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val request = CheckoutRequest(currency = "USD", provider = "stripe")
+            val result = cartRepository.checkoutItem(itemId, request)
+
+            if (result.isSuccess) {
+                onSuccess(result.getOrThrow())
+            } else {
+                onError(result.exceptionOrNull()?.message ?: "Unknown error")
+            }
+        }
+    }
+
+
 }

@@ -1,10 +1,13 @@
 package com.example.kmd
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.*
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,7 +18,9 @@ import com.example.kmd.presentation.navigation.Screen
 import com.example.kmd.presentation.screens.auth.LoginScreen
 import com.example.kmd.presentation.screens.auth.RegisterScreen
 import com.example.kmd.presentation.screens.cart.CartDetailScreen
+import com.example.kmd.presentation.screens.cart.CartDetailViewModel
 import com.example.kmd.presentation.screens.cart.CartScreen
+import com.example.kmd.presentation.screens.cart.PaymentScreen
 import com.example.kmd.presentation.screens.children.ChildrenManageScreen
 import com.example.kmd.presentation.screens.parent.CreateParentProfileScreen
 import com.example.kmd.presentation.screens.parent.ParentProfileScreen
@@ -25,6 +30,7 @@ import com.example.kmd.presentation.screens.psychologist.SlotViewScreen
 import com.example.kmd.presentation.screens.splash.SplashScreen
 import com.example.kmd.ui.theme.KmdTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URLEncoder
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -165,6 +171,38 @@ class MainActivity : ComponentActivity() {
                                 onBackClick = { navController.popBackStack() }
                             )
                         }
+                        composable("cart_detail/{itemId}") { backStackEntry ->
+                            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+                            val context = LocalContext.current
+                            val viewModel: CartDetailViewModel = hiltViewModel()
+
+                            CartDetailScreen(
+                                onBackClick = { navController.popBackStack() },
+                                onCheckoutClick = { itemId ->
+                                    viewModel.checkoutCartItem(
+                                        itemId = itemId,
+                                        onSuccess = { response ->
+                                            val paymentUrl = response.paymentUrl
+                                            if (!paymentUrl.isNullOrBlank()) {
+                                                val encodedUrl = URLEncoder.encode(paymentUrl, "UTF-8")
+                                                navController.navigate("payment/$encodedUrl")
+                                            } else {
+                                                Toast.makeText(context, "Invalid payment URL", Toast.LENGTH_LONG).show()
+                                            }
+                                        },
+                                        onError = { error ->
+                                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                                        }
+                                    )
+                                }
+                            )
+                        }
+
+                        composable("payment/{url}") { backStackEntry ->
+                            val encodedUrl = backStackEntry.arguments?.getString("url") ?: ""
+                            PaymentScreen(url = encodedUrl)
+                        }
+
                     }
                 }
             }

@@ -2,6 +2,8 @@ package com.example.kmd.domain.repository
 
 import com.example.kmd.domain.model.Cart
 import com.example.kmd.domain.model.CartItem
+import com.example.kmd.domain.model.CheckoutRequest
+import com.example.kmd.domain.model.CheckoutResponse
 
 interface ICartRepository {
     suspend fun getCart(): Result<Cart>
@@ -13,4 +15,5 @@ interface ICartRepository {
         notes: String?
     ): Result<Unit>
     suspend fun removeCartItem(itemId: String): Result<Unit>
+    suspend fun checkoutItem(itemId: String, request: CheckoutRequest): Result<CheckoutResponse>
 }
