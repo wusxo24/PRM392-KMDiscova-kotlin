@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -53,7 +54,8 @@ fun AppDrawerContent(
         DrawerItem("Profile", Icons.Default.Home, Screen.ParentProfile.route),
         // This is the fix: Changed Screen.PsychologistMarket.route to Screen.PsychologistList.route
         DrawerItem("Psychologists", Icons.Default.People, Screen.PsychologistList.route),
-        DrawerItem("My Children", Icons.Default.Person, Screen.ChildrenManage.route)
+        DrawerItem("My Children", Icons.Default.Person, Screen.ChildrenManage.route),
+        DrawerItem("My Cart", Icons.Default.ShoppingCart, Screen.Cart.route)
     )
 
     ModalDrawerSheet {
@@ -77,7 +79,7 @@ fun AppDrawerContent(
         HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp))
         Spacer(Modifier.height(12.dp))
         NavigationDrawerItem(
-            icon = { Icon(Icons.Default.Logout, contentDescription = "Logout") },
+            icon = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout") },
             label = { Text("Logout") },
             selected = false,
             onClick = {

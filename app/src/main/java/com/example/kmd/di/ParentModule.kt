@@ -1,8 +1,12 @@
 package com.example.kmd.di
 
+import com.example.kmd.data.remote.api.CartApiService
 import com.example.kmd.data.remote.api.ParentApiService
+import com.example.kmd.data.repository.CartRepository
 import com.example.kmd.data.repository.ParentRepository
+import com.example.kmd.domain.repository.ICartRepository
 import com.example.kmd.domain.repository.IParentRepository
+import com.example.kmd.domain.usecase.cart.GetCartUseCase
 import com.example.kmd.domain.usecase.parent.GetParentProfileUseCase
 import dagger.Module
 import dagger.Provides
@@ -30,5 +34,22 @@ object ParentModule {
     @Provides
     fun provideGetParentProfileUseCase(repository: IParentRepository): GetParentProfileUseCase {
         return GetParentProfileUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartApiService(retrofit: Retrofit): CartApiService {
+        return retrofit.create(CartApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(apiService: CartApiService): ICartRepository {
+        return CartRepository(apiService)
+    }
+
+    @Provides
+    fun provideGetCartUseCase(repository: ICartRepository): GetCartUseCase {
+        return GetCartUseCase(repository)
     }
 }

@@ -14,6 +14,8 @@ import com.example.kmd.presentation.components.AppDrawerContent
 import com.example.kmd.presentation.navigation.Screen
 import com.example.kmd.presentation.screens.auth.LoginScreen
 import com.example.kmd.presentation.screens.auth.RegisterScreen
+import com.example.kmd.presentation.screens.cart.CartDetailScreen
+import com.example.kmd.presentation.screens.cart.CartScreen
 import com.example.kmd.presentation.screens.children.ChildrenManageScreen
 import com.example.kmd.presentation.screens.parent.CreateParentProfileScreen
 import com.example.kmd.presentation.screens.parent.ParentProfileScreen
@@ -44,7 +46,6 @@ class MainActivity : ComponentActivity() {
                             scope = scope,
                             drawerState = drawerState,
                             onLogout = {
-                                // This is the change: Directly navigate to Login and clear the back stack
                                 navController.navigate(Screen.Login.route) {
                                     popUpTo(navController.graph.id) {
                                         inclusive = true
@@ -113,6 +114,26 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Screen.ChildrenManage.route) {
                             ChildrenManageScreen(scope = scope, drawerState = drawerState)
+                        }
+                        composable(Screen.Cart.route) {
+                            CartScreen(
+                                scope = scope,
+                                drawerState = drawerState,
+                                onItemClick = { itemId ->
+                                    navController.navigate(Screen.CartDetail.createRoute(itemId))
+                                }
+                            )
+                        }
+                        composable(
+                            route = Screen.CartDetail.route,
+                            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+                        ) {
+                            CartDetailScreen(
+                                onBackClick = { navController.popBackStack() },
+                                onCheckoutClick = { itemId ->
+                                    // Navigate to your checkout screen
+                                }
+                            )
                         }
                         composable(
                             route = Screen.PsychologistDetails.route,

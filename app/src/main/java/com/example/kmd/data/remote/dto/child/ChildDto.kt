@@ -9,10 +9,10 @@ data class ChildDto(
     val date_of_birth: String,
     val age: Int,
     val gender: String,
-    val health_status: String,
-    val developmental_concerns: String,
-    val parental_goals: String,
-    val created_at: String
+    val health_status: String?,
+    val developmental_concerns: String?,
+    val parental_goals: String?,
+    val created_at: String?
 )
 
 data class AddChildRequest(
