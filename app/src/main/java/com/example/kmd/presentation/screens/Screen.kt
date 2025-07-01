@@ -6,4 +6,7 @@ sealed class Screen(val route: String) {
     object Register : Screen("register")
     object Home : Screen("psychologists") // Your list screen
     object PsychologistDetail : Screen("psychologist_detail") // Detail screen
+    object CreateParentProfile : Screen("create_parent_profile")
+    object MyChildren : Screen("my_children")
+    object AddChild : Screen("add_child")
 }

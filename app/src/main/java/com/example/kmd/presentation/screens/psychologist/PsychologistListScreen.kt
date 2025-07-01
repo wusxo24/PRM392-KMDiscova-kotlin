@@ -25,10 +25,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.kmd.domain.model.Psychologist
+import com.example.kmd.presentation.components.AppTopAppBar
+import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PsychologistListScreen(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
     onPsychologistClick: (String) -> Unit,
     onLogoutClick: () -> Unit,
     viewModel: PsychologistListViewModel = hiltViewModel()
@@ -41,30 +45,11 @@ fun PsychologistListScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Find Your Psychologist",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-                    TextButton(onClick = onLogoutClick) {
-                        Text(
-                            "Logout",
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+            AppTopAppBar(
+                title = "Find Your Psychologist",
+                scope = scope,
+                drawerState = drawerState
             )
-
         }
     ) { padding ->
         Box(

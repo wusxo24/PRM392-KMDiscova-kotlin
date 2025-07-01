@@ -1,5 +1,6 @@
 package com.example.kmd.presentation.screens.psychologist
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -74,6 +75,7 @@ import androidx.compose.ui.platform.LocalContext
 fun SlotViewScreen(
     userId: String,
     sessionType: String,
+    childId: String,
     onBackClick: () -> Unit,
     viewModel: SlotViewModel = hiltViewModel(),
 ) {
@@ -81,10 +83,26 @@ fun SlotViewScreen(
     var selectedSlotId by remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
-
     LaunchedEffect(Unit) {
         viewModel.loadSlots(userId, sessionType)
     }
+
+    // --- START OF LOGGING ---
+    LaunchedEffect(viewModel.addToCartResult) {
+        viewModel.addToCartResult.collect { result ->
+            if (result.isSuccess) {
+                Log.d("BookingFlow", "UI: Received SUCCESS from ViewModel.")
+                Toast.makeText(context, "Slot added to cart!", Toast.LENGTH_SHORT).show()
+                onBackClick() // Or navigate to cart screen
+            } else {
+                val errorMessage = result.exceptionOrNull()?.message ?: "An unknown error occurred."
+                Log.e("BookingFlow", "UI: Received FAILURE from ViewModel. Error: $errorMessage")
+                Log.e("BookingFlow", "UI: Exception: ${result.exceptionOrNull()?.stackTraceToString()}")
+                Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+    // --- END OF LOGGING ---
 
     Scaffold(
         topBar = {
@@ -145,20 +163,18 @@ fun SlotViewScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Button(
-                            onClick = onClick@{
-                                val psychologistId = userId
-                                val slotId = selectedSlotId
-
-                                if (psychologistId.isEmpty() || slotId == null) {
-                                    Toast.makeText(
-                                        context,
-                                        "Missing required information for booking. Please try again.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    return@onClick // ✅ This is now valid!
+                            onClick = {
+                                // --- START OF LOGGING ---
+                                Log.d("BookingFlow", "UI: Book Slot button clicked.")
+                                // --- END OF LOGGING ---
+                                selectedSlotId?.let { slotId ->
+                                    viewModel.addToCart(
+                                        childId = childId,
+                                        psychologistId = userId,
+                                        sessionType = sessionType,
+                                        slotId = slotId
+                                    )
                                 }
-
-                                println("psychologistId=$psychologistId, slotId=$slotId")
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -212,7 +228,7 @@ fun SlotViewScreen(
         }
     }
 }
-
+// ... (The rest of the SlotViewScreen file remains the same)
 @Composable
 private fun SessionHeader(sessionType: String) {
     Surface(
