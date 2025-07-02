@@ -7,6 +7,8 @@ import com.example.kmd.domain.model.Cart
 import com.example.kmd.domain.model.CartItem
 import com.example.kmd.domain.model.CheckoutRequest
 import com.example.kmd.domain.model.CheckoutResponse
+import com.example.kmd.domain.model.InitiatePaymentRequest
+import com.example.kmd.domain.model.PaymentInitiationResponse
 import com.example.kmd.domain.repository.ICartRepository
 import javax.inject.Inject
 
@@ -44,6 +46,7 @@ class CartRepository @Inject constructor(
         }
     }
 
+
     override suspend fun removeCartItem(itemId: String): Result<Unit> {
         return try {
             cartApiService.removeItemFromCart(itemId)
@@ -56,6 +59,24 @@ class CartRepository @Inject constructor(
         return try {
             val response = cartApiService.checkoutCartItem(itemId, request)
             Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    override suspend fun initiatePayment(
+        orderId: String,
+        successUrl: String,
+        cancelUrl: String,
+        provider: String
+    ): Result<PaymentInitiationResponse> {
+        return try {
+            val req = InitiatePaymentRequest(
+                success_url = successUrl,
+                cancel_url = cancelUrl,
+                provider = provider
+            )
+            val resp = cartApiService.initiatePayment(orderId, req)
+            Result.success(resp)
         } catch (e: Exception) {
             Result.failure(e)
         }
