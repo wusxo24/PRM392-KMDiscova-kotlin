@@ -3,6 +3,10 @@ package com.example.kmd.data.remote.api
 import com.example.kmd.data.remote.dto.cart.AddItemToCartResponse
 import com.example.kmd.data.remote.dto.cart.AddToCartRequest
 import com.example.kmd.data.remote.dto.cart.CartDto
+import com.example.kmd.domain.model.CheckoutRequest
+import com.example.kmd.domain.model.CheckoutResponse
+import com.example.kmd.domain.model.InitiatePaymentRequest
+import com.example.kmd.domain.model.PaymentInitiationResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -19,4 +23,18 @@ interface CartApiService {
 
     @DELETE("/api/carts/items/{id}/remove/")
     suspend fun removeItemFromCart(@Path("id") itemId: String): Response<Unit>
+
+    @POST("api/carts/items/{id}/checkout/")
+
+    suspend fun checkoutCartItem(
+        @Path("id") itemId: String,
+        @Body request: CheckoutRequest
+    ): CheckoutResponse
+    @POST("api/payments/orders/{order_id}/initiate_payment/")
+    suspend fun initiatePayment(
+        @Path("order_id") orderId: String,
+        @Body body: InitiatePaymentRequest
+    ): PaymentInitiationResponse
+
+
 }
