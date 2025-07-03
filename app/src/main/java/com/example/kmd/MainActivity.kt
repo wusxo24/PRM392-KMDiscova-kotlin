@@ -30,6 +30,8 @@
     import com.example.kmd.presentation.screens.psychologist.PsychologistDetailScreen
     import com.example.kmd.presentation.screens.psychologist.PsychologistListScreen
     import com.example.kmd.presentation.screens.psychologist.SlotViewScreen
+    import com.example.kmd.presentation.screens.booking.BookingsScreen
+    import com.example.kmd.presentation.screens.booking.BookingDetailScreen
     import com.example.kmd.presentation.screens.splash.SplashScreen
     import com.example.kmd.ui.theme.KmdTheme
     import dagger.hilt.android.AndroidEntryPoint
@@ -226,6 +228,24 @@
                                     onFailure = { message ->
                                         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                                     }
+                                )
+                            }
+                            composable(Screen.MyBookings.route) {
+                                BookingsScreen(
+                                    scope = scope,
+                                    drawerState = drawerState,
+                                    onBookingClick = { appointmentId ->
+                                        navController.navigate(Screen.BookingDetail.createRoute(appointmentId))
+                                    }
+                                )
+                            }
+
+                            composable(
+                                route = Screen.BookingDetail.route,
+                                arguments = listOf(navArgument("appointmentId") { type = NavType.StringType })
+                            ) {
+                                BookingDetailScreen(
+                                    onBackClick = { navController.popBackStack() }
                                 )
                             }
 
