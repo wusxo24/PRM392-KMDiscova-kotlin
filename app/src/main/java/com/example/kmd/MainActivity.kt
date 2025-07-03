@@ -38,6 +38,8 @@
     import java.net.URLEncoder
     import androidx.compose.runtime.getValue
     import androidx.compose.runtime.setValue
+    import com.example.kmd.presentation.screens.chat.ChatListScreen
+    import com.example.kmd.presentation.screens.chat.ChatScreen
 
     @AndroidEntryPoint
     class MainActivity : ComponentActivity() {
@@ -156,6 +158,9 @@
                                     onBackClick = { navController.popBackStack() },
                                     onBookClick = { id, type, childId ->
                                         navController.navigate("booking_screen/$id/$type/$childId")
+                                    },
+                                    onChatClick = { psychologistId, psychologistName ->
+                                        navController.navigate(Screen.Chat.createRoute(psychologistId, psychologistName))
                                     }
                                 )
                             }
@@ -249,8 +254,32 @@
                                 )
                             }
 
+                            composable(Screen.ChatList.route) {
+                                ChatListScreen(
+                                    onBackClick = { navController.popBackStack() },
+                                    onChatRoomClick = { chatRoomId ->
+                                        // For now, navigate to a generic chat
+                                        navController.navigate(Screen.Chat.createRoute(chatRoomId, "Psychologist"))
+                                    }
+                                )
+                            }
 
-
+                            composable(
+                                route = Screen.Chat.route,
+                                arguments = listOf(
+                                    navArgument("chatRoomId") { type = NavType.StringType },
+                                    navArgument("psychologistName") { type = NavType.StringType }
+                                )
+                            ) { backStackEntry ->
+                                val chatRoomId = backStackEntry.arguments?.getString("chatRoomId") ?: ""
+                                val psychologistName = backStackEntry.arguments?.getString("psychologistName") ?: ""
+                                
+                                ChatScreen(
+                                    chatRoomId = chatRoomId,
+                                    psychologistName = psychologistName,
+                                    onBackClick = { navController.popBackStack() }
+                                )
+                            }
                         }
                     }
                 }

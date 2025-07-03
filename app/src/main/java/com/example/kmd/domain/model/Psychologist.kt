@@ -28,5 +28,6 @@ data class PsychologistDetail(
     val services: List<String>,
     val offersInitialConsultation: Boolean,
     val offersOnlineSessions: Boolean,
-    val user: UserDto
+    val user: UserDto,
+    val officeAddress: String?
 )
