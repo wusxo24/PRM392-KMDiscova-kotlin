@@ -98,4 +98,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     //Coil
     implementation(libs.coil.compose)
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }
