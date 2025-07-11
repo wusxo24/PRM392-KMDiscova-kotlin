@@ -10,7 +10,7 @@ import com.example.kmd.domain.model.UserType
 object AuthMapper {
     fun UserDto.toDomainModel(): User {
         return User(
-            id = this.id,
+            id = this.id ?:" ",
             email = this.email,
             userType = UserType.valueOf(this.user_type),
             isVerified = this.is_verified
