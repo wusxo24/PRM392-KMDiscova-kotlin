@@ -5,7 +5,7 @@ import com.example.kmd.domain.model.User
 
 interface IAuthRepository {
     suspend fun login(email: String, password: String): Result<AuthResult>
-    suspend fun register(email: String, password: String): Result<AuthResult>
+    suspend fun register(email: String, password: String, passwordConfirm: String): Result<AuthResult>
 //    suspend fun logout(): Result<Unit>
     suspend fun getCurrentUser(): User?
     suspend fun saveAuthToken(token: String)

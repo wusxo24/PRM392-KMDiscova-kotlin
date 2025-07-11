@@ -40,9 +40,13 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    override suspend fun register(email: String, password: String): Result<AuthResult> {
+    override suspend fun register(email: String, password: String, passwordConfirm: String): Result<AuthResult> {
         return try {
-            val request = RegisterRequest(email, password)
+            val request = RegisterRequest(
+                email = email,
+                password = password,
+                password_confirm = passwordConfirm
+            )
             val response = authApiService.register(request)
             Result.success(response.toDomainModel())
         } catch (e: HttpException) {
@@ -57,6 +61,7 @@ class AuthRepository @Inject constructor(
             Result.failure(Exception("An unexpected error occurred: ${e.message}"))
         }
     }
+
 
 //    override suspend fun logout(): Result<Unit> {
 //        return try {

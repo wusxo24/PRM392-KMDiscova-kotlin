@@ -125,12 +125,9 @@ fun RegisterScreen(
         // Register Button
         Button(
             onClick = {
-                if (password == confirmPassword) {
-                    viewModel.register(email, password)
-                } else {
-                    viewModel.setError("Passwords do not match")
-                }
-            },
+                viewModel.register(email, password, confirmPassword)
+            }
+            ,
             enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {

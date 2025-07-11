@@ -8,13 +8,17 @@ import javax.inject.Inject
 class RegisterUseCase @Inject constructor(
     private val authRepository: IAuthRepository
 ) {
-    suspend operator fun invoke(email: String, password: String): Result<AuthResult> {
+    suspend operator fun invoke(email: String, password: String, passwordConfirm: String): Result<AuthResult> {
         return try {
-            if (email.isBlank() || password.isBlank()) {
-                return Result.failure(Exception("Email and password cannot be empty"))
+            if (email.isBlank() || password.isBlank() || passwordConfirm.isBlank()) {
+                return Result.failure(Exception("Email and passwords cannot be empty"))
             }
 
-            val result = authRepository.register(email, password)
+            if (password != passwordConfirm) {
+                return Result.failure(Exception("Passwords do not match"))
+            }
+
+            val result = authRepository.register(email, password, passwordConfirm)
 
             if (result.isSuccess) {
                 val authResult = result.getOrNull()!!
@@ -26,4 +30,5 @@ class RegisterUseCase @Inject constructor(
             Result.failure(e)
         }
     }
+
 }
