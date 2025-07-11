@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
@@ -55,7 +56,9 @@ fun AppDrawerContent(
         // This is the fix: Changed Screen.PsychologistMarket.route to Screen.PsychologistList.route
         DrawerItem("Psychologists", Icons.Default.People, Screen.PsychologistList.route),
         DrawerItem("My Children", Icons.Default.Person, Screen.ChildrenManage.route),
-        DrawerItem("My Cart", Icons.Default.ShoppingCart, Screen.Cart.route)
+        DrawerItem("My Cart", Icons.Default.ShoppingCart, Screen.Cart.route),
+        DrawerItem("My Bookings", Icons.Default.DateRange, Screen.MyBookings.route)
+
     )
 
     ModalDrawerSheet {

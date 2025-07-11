@@ -35,7 +35,8 @@ fun PsychologistDetailDto.toDomain(): PsychologistDetail {
         services = services_offered,
         offersInitialConsultation = offers_initial_consultation,
         offersOnlineSessions = offers_online_sessions,
-        user = user.toDomain()
+        user = user.toDomain(),
+        officeAddress = office_address
     )
 }
 

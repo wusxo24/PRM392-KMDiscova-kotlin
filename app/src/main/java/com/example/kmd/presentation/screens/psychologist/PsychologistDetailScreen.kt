@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,12 +30,26 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.kmd.domain.model.Child
 import com.example.kmd.domain.model.PsychologistDetail
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.android.gms.maps.model.LatLng
+import android.location.Geocoder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.MarkerState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PsychologistDetailScreen(
     onBackClick: () -> Unit,
     onBookClick: (String, String, String) -> Unit, // Add childId parameter
+    onChatClick: (String, String) -> Unit, // Add chat navigation parameter
     viewModel: PsychologistDetailViewModel = androidx.hilt.navigation.compose.hiltViewModel()
 ) {
     val state = viewModel.uiState
@@ -89,7 +104,8 @@ fun PsychologistDetailScreen(
                     PsychologistContent(
                         psychologist = state.psychologist,
                         children = children,
-                        onBookClick = onBookClick
+                        onBookClick = onBookClick,
+                        onChatClick = onChatClick
                     )
                 }
             }
@@ -152,9 +168,17 @@ private fun ErrorState(message: String) {
 private fun PsychologistContent(
     psychologist: PsychologistDetail,
     children: List<Child>,
-    onBookClick: (String, String, String) -> Unit
+    onBookClick: (String, String, String) -> Unit,
+    onChatClick: (String, String) -> Unit
 ) {
     var selectedChild by remember { mutableStateOf<Child?>(null) }
+    var showAddressDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    // For geocoding and map state
+    var latLng by remember { mutableStateOf<LatLng?>(null) }
+    var isGeocoding by remember { mutableStateOf(false) }
+    var geocodeError by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -189,6 +213,90 @@ private fun PsychologistContent(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+        }
+
+        // Address Button
+        if (!psychologist.officeAddress.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                showAddressDialog = true
+                isGeocoding = true
+                geocodeError = null
+                coroutineScope.launch {
+                    val result = geocodeAddress(context, psychologist.officeAddress!!)
+                    if (result != null) {
+                        latLng = result
+                        geocodeError = null
+                    } else {
+                        geocodeError = "Could not find location."
+                    }
+                    isGeocoding = false
+                }
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text("View Address")
+            }
+        }
+
+        // Chat Button
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { onChatClick(psychologist.id, psychologist.fullName) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            Text("Chat with ${psychologist.fullName}")
+        }
+
+        if (showAddressDialog) {
+            AlertDialog(
+                onDismissRequest = { showAddressDialog = false },
+                title = { Text("Office Address") },
+                text = {
+                    Column {
+                        Text(psychologist.officeAddress ?: "No address available")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        when {
+                            isGeocoding -> {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Loading map...")
+                                }
+                            }
+                            geocodeError != null -> {
+                                Text(geocodeError!!, color = MaterialTheme.colorScheme.error)
+                            }
+                            latLng != null -> {
+                                val currentLatLng = latLng!!
+                                val cameraPositionState = rememberCameraPositionState()
+                                LaunchedEffect(currentLatLng) {
+                                    cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLatLng, 16f)
+                                }
+                                Box(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(240.dp)) {
+                                    GoogleMap(
+                                        modifier = Modifier.matchParentSize(),
+                                        cameraPositionState = cameraPositionState
+                                    ) {
+                                        Marker(
+                                            state = MarkerState(position = currentLatLng),
+                                            title = "Office"
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = { showAddressDialog = false }) {
+                        Text("Close")
+                    }
+                }
+            )
         }
 
         // Content Section
@@ -426,6 +534,22 @@ fun ChildrenDropdown(
                     }
                 )
             }
+        }
+    }
+}
+
+// Helper function for geocoding
+suspend fun geocodeAddress(context: android.content.Context, address: String): LatLng? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val geocoder = Geocoder(context)
+            val results = geocoder.getFromLocationName(address, 1)
+            if (!results.isNullOrEmpty()) {
+                val loc = results[0]
+                LatLng(loc.latitude, loc.longitude)
+            } else null
+        } catch (e: Exception) {
+            null
         }
     }
 }

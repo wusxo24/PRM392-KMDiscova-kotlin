@@ -63,6 +63,7 @@ dependencies {
     // Hilt dependencies - using older stable version with KAPT
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
+    implementation("com.stripe:stripe-android:20.45.0") // check latest
 
     // Hilt + Jetpack Compose Navigation
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
@@ -97,4 +98,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     //Coil
     implementation(libs.coil.compose)
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }
