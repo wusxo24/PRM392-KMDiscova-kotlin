@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Signpost
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,8 +43,22 @@ fun ParentProfileScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.onEditClick() }) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit Profile")
+            if (!uiState.isUpdating) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FloatingActionButton(
+                        onClick = { viewModel.onEditClick() }
+                    ) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit Profile")
+                    }
+                    
+                    FloatingActionButton(
+                        onClick = { viewModel.testNotification() }
+                    ) {
+                        Icon(Icons.Default.Notifications, contentDescription = "Test Notification")
+                    }
+                }
             }
         }
     ) { padding ->
@@ -55,9 +70,17 @@ fun ParentProfileScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                if (uiState.isLoading) {
+                if (uiState.isLoading || uiState.isUpdating) {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = if (uiState.isUpdating) "Updating profile..." else "Loading profile...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 } else if (uiState.parentProfile != null) {
                     val profile = uiState.parentProfile!!

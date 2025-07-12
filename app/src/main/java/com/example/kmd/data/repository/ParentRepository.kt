@@ -3,6 +3,7 @@ package com.example.kmd.data.repository
 import com.example.kmd.data.mapper.toDomain
 import com.example.kmd.data.remote.api.ParentApiService
 import com.example.kmd.data.remote.dto.child.AddChildRequest
+import com.example.kmd.data.remote.dto.child.CreateChildResponse
 import com.example.kmd.data.remote.dto.parent.CreateParentProfileRequest
 import com.example.kmd.domain.model.Child
 import com.example.kmd.domain.model.ParentProfile
@@ -63,17 +64,20 @@ class ParentRepository @Inject constructor(
         return try {
             val request = AddChildRequest(
                 first_name = child.firstName,
-                last_name = child.lastName,
-                nickname = child.displayName, // Or add a nickname field to your domain model
                 date_of_birth = child.dateOfBirth,
-                gender = child.gender,
-                health_status = "", // Add these fields to your domain model and UI
-                developmental_concerns = "",
-                parental_goals = ""
+                last_name = child.lastName.takeIf { it.isNotEmpty() },
+                nickname = null, // We can add this later if needed
+                gender = child.gender, // Now required
+                health_status = null, // We can add these fields later if needed
+                developmental_concerns = null,
+                parental_goals = null
             )
             val response = parentApiService.addChild(request)
-            Result.success(response.toDomain())
+            Result.success(response.child.toDomain())
         } catch (e: Exception) {
+            println("API Error: ${e.message}")
+            println("Exception type: ${e.javaClass.simpleName}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }

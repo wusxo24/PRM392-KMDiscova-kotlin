@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.kmd.domain.model.ParentProfile
 import com.example.kmd.domain.usecase.parent.GetParentProfileUseCase
 import com.example.kmd.domain.usecase.parent.UpdateParentProfileUseCase
+import com.example.kmd.di.notification.NotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,13 +17,15 @@ data class ParentProfileUiState(
     val isLoading: Boolean = false,
     val parentProfile: ParentProfile? = null,
     val errorMessage: String? = null,
-    val isEditing: Boolean = false
+    val isEditing: Boolean = false,
+    val isUpdating: Boolean = false
 )
 
 @HiltViewModel
 class ParentProfileViewModel @Inject constructor(
     private val getParentProfileUseCase: GetParentProfileUseCase,
-    private val updateParentProfileUseCase: UpdateParentProfileUseCase
+    private val updateParentProfileUseCase: UpdateParentProfileUseCase,
+    private val notificationManager: NotificationManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ParentProfileUiState())
@@ -32,7 +35,7 @@ class ParentProfileViewModel @Inject constructor(
         loadProfile()
     }
 
-    private fun loadProfile() {
+    fun loadProfile() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             val result = getParentProfileUseCase()
@@ -54,13 +57,29 @@ class ParentProfileViewModel @Inject constructor(
 
     fun onSaveProfile(editedProfile: ParentProfile) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(isUpdating = true, errorMessage = null)
             val result = updateParentProfileUseCase(editedProfile)
             if(result.isSuccess){
-                _uiState.value = _uiState.value.copy(isLoading = false, isEditing = false, parentProfile = result.getOrNull())
+                // Update the profile in UI state immediately
+                _uiState.value = _uiState.value.copy(
+                    isUpdating = false,
+                    isEditing = false,
+                    parentProfile = result.getOrNull() ?: editedProfile
+                )
+                // Also reload the profile to ensure we have the latest data
+                loadProfile()
             } else {
-                _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = result.exceptionOrNull()?.message ?: "Failed to update profile")
+                _uiState.value = _uiState.value.copy(
+                    isUpdating = false,
+                    errorMessage = result.exceptionOrNull()?.message ?: "Failed to update profile"
+                )
             }
+        }
+    }
+
+    fun testNotification() {
+        viewModelScope.launch {
+            notificationManager.showCartNotification(3)
         }
     }
 }

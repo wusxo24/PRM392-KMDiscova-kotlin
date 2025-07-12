@@ -15,7 +15,9 @@ import javax.inject.Inject
 data class ChildrenUiState(
     val isLoading: Boolean = false,
     val children: List<Child> = emptyList(),
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isAdding: Boolean = false,
+    val successMessage: String? = null
 )
 
 @HiltViewModel
@@ -36,9 +38,10 @@ class ChildrenViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             val result = getMyChildrenUseCase()
             if (result.isSuccess) {
+                val children = result.getOrNull() ?: emptyList()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    children = result.getOrNull() ?: emptyList()
+                    children = children
                 )
             } else {
                 _uiState.value = _uiState.value.copy(
@@ -51,14 +54,28 @@ class ChildrenViewModel @Inject constructor(
 
     fun addChild(child: Child) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            _uiState.value = _uiState.value.copy(isAdding = true, errorMessage = null, successMessage = null)
             val result = addChildUseCase(child)
             if (result.isSuccess) {
-                // This line is the key. It refetches the data after a successful add.
+                // Reset adding state
+                _uiState.value = _uiState.value.copy(isAdding = false)
+                
+                // Add the new child to the current list immediately for instant UI feedback
+                val newChild = result.getOrNull()
+                if (newChild != null) {
+                    val currentChildren = _uiState.value.children.toMutableList()
+                    currentChildren.add(newChild)
+                    _uiState.value = _uiState.value.copy(
+                        children = currentChildren,
+                        successMessage = "${child.firstName} has been added successfully!"
+                    )
+                }
+                
+                // Then refresh from server to ensure we have the latest data
                 loadMyChildren()
             } else {
                 _uiState.value = _uiState.value.copy(
-                    isLoading = false,
+                    isAdding = false,
                     errorMessage = result.exceptionOrNull()?.message ?: "Failed to add child"
                 )
             }

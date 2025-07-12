@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.RemoveShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,7 +23,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.example.kmd.domain.model.CartItem
 import com.example.kmd.presentation.components.AppTopAppBar
+import com.example.kmd.di.notification.NotificationManager
 import kotlinx.coroutines.CoroutineScope
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +36,12 @@ fun CartScreen(
     viewModel: CartViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Clear cart notification when screen is opened
+    LaunchedEffect(Unit) {
+        // This will be handled by the ViewModel
+        viewModel.clearCartNotification()
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {

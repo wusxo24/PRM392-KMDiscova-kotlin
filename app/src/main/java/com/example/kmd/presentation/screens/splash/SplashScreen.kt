@@ -21,7 +21,13 @@ fun SplashScreen(
 
     LaunchedEffect(uiState.isCheckComplete) {
         if (uiState.isCheckComplete) {
-            delay(1000) // Show splash for at least 1 second
+            // Wait for notification to be shown if there are cart items
+            if (uiState.cartItemCount > 0) {
+                delay(2000) // Wait 2 seconds to ensure notification is shown
+            } else {
+                delay(1000) // Show splash for at least 1 second
+            }
+            
             if (uiState.isUserLoggedIn) {
                 onNavigateToHome()
             } else {
@@ -55,7 +61,11 @@ fun SplashScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Loading...",
+                text = if (uiState.cartItemCount > 0) {
+                    "Loading... (${uiState.cartItemCount} items in cart)"
+                } else {
+                    "Loading..."
+                },
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )

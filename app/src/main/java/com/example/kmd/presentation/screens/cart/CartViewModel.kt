@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kmd.domain.model.Cart
 import com.example.kmd.domain.usecase.cart.GetCartUseCase
+import com.example.kmd.di.notification.NotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,8 @@ data class CartUiState(
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val getCartUseCase: GetCartUseCase
+    private val getCartUseCase: GetCartUseCase,
+    private val notificationManager: NotificationManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CartUiState())
@@ -45,5 +47,9 @@ class CartViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun clearCartNotification() {
+        notificationManager.cancelCartNotification()
     }
 }

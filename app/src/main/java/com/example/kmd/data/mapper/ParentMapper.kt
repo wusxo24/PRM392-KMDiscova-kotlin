@@ -21,8 +21,9 @@ fun ParentProfileDto.toDomain(): ParentProfile {
 }
 
 fun ChildDto.toDomain(): Child {
+    println("Mapping ChildDto to Domain: id='$id', firstName='$first_name'")
     return Child(
-        id = id,
+        id = id.ifEmpty { "temp-${System.currentTimeMillis()}" },
         firstName = first_name,
         lastName = last_name,
         displayName = display_name,

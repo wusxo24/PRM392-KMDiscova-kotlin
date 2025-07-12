@@ -2,6 +2,7 @@ package com.example.kmd.data.remote.api
 
 import com.example.kmd.data.remote.dto.child.AddChildRequest
 import com.example.kmd.data.remote.dto.child.ChildDto
+import com.example.kmd.data.remote.dto.child.CreateChildResponse
 import com.example.kmd.data.remote.dto.child.MyChildrenResponse
 import com.example.kmd.data.remote.dto.parent.CreateParentProfileRequest
 import com.example.kmd.data.remote.dto.parent.ParentProfileDto
@@ -18,7 +19,7 @@ interface ParentApiService {
     suspend fun getParentProfile(): ParentProfileDto
 
     @POST("/api/children/profile/")
-    suspend fun addChild(@Body request: AddChildRequest): ChildDto
+    suspend fun addChild(@Body request: AddChildRequest): CreateChildResponse
 
     @GET("/api/children/profile/my_children/")
     suspend fun getMyChildren(): MyChildrenResponse

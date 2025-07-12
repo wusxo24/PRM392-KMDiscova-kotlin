@@ -1,15 +1,21 @@
     package com.example.kmd
 
+    import android.Manifest
+    import android.content.pm.PackageManager
+    import android.os.Build
     import android.os.Bundle
+    import android.util.Log
     import android.widget.Toast
     import androidx.activity.ComponentActivity
     import androidx.activity.compose.setContent
+    import androidx.activity.result.contract.ActivityResultContracts
     import androidx.compose.material3.*
     import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.mutableStateOf
     import androidx.compose.runtime.remember
     import androidx.compose.runtime.rememberCoroutineScope
     import androidx.compose.ui.platform.LocalContext
+    import androidx.core.content.ContextCompat
     import androidx.hilt.navigation.compose.hiltViewModel
     import androidx.navigation.NavType
     import androidx.navigation.compose.NavHost
@@ -44,15 +50,51 @@
     @AndroidEntryPoint
     class MainActivity : ComponentActivity() {
 
+        private val requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.d("MainActivity", "Notification permission granted")
+            } else {
+                Log.w("MainActivity", "Notification permission denied")
+            }
+        }
+
         @OptIn(ExperimentalMaterial3Api::class)
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
+            
+            // Request notification permission for Android 13+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+            
+            // Handle notification intent
+            val shouldNavigateToCart = intent.getBooleanExtra("navigate_to_cart", false)
+            Log.d("MainActivity", "Should navigate to cart: $shouldNavigateToCart")
+            
             setContent {
                 KmdTheme {
                     val navController = rememberNavController()
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val scope = rememberCoroutineScope()
 
+                    // Handle notification navigation
+                    LaunchedEffect(shouldNavigateToCart) {
+                        if (shouldNavigateToCart) {
+                            Log.d("MainActivity", "Navigating to cart from notification")
+                            navController.navigate(Screen.Cart.route) {
+                                popUpTo(Screen.Splash.route) { inclusive = true }
+                            }
+                        }
+                    }
+                    
                     ModalNavigationDrawer(
                         drawerState = drawerState,
                         drawerContent = {
@@ -131,6 +173,12 @@
                                 ChildrenManageScreen(scope = scope, drawerState = drawerState)
                             }
                             composable(Screen.Cart.route) {
+                                // Clear cart notification when user opens cart
+                                LaunchedEffect(Unit) {
+                                    // Clear the notification when cart screen is opened
+                                    // This will be handled by the CartScreen
+                                }
+                                
                                 CartScreen(
                                     scope = scope,
                                     drawerState = drawerState,
