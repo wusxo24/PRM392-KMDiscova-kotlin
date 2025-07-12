@@ -77,9 +77,5 @@ class ParentProfileViewModel @Inject constructor(
         }
     }
 
-    fun testNotification() {
-        viewModelScope.launch {
-            notificationManager.showCartNotification(3)
-        }
-    }
+
 }

@@ -11,7 +11,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Signpost
-import androidx.compose.material.icons.filled.Notifications
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,20 +44,10 @@ fun ParentProfileScreen(
         },
         floatingActionButton = {
             if (!uiState.isUpdating) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                FloatingActionButton(
+                    onClick = { viewModel.onEditClick() }
                 ) {
-                    FloatingActionButton(
-                        onClick = { viewModel.onEditClick() }
-                    ) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit Profile")
-                    }
-                    
-                    FloatingActionButton(
-                        onClick = { viewModel.testNotification() }
-                    ) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Test Notification")
-                    }
+                    Icon(Icons.Default.Edit, contentDescription = "Edit Profile")
                 }
             }
         }
